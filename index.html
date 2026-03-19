@@ -106,7 +106,15 @@ function renderProducts(products) {
 
         container.appendChild(card);
 
-        paypal.Buttons({
+        card.innerHTML = `
+    <img src="${product.image}">
+    <h3>${product.name}</h3>
+    <p>${product.description}</p>
+    <h2>$${product.price}</h2>
+    <a href="${product.link}" target="_blank">
+        <button>Buy Now</button>
+    </a>
+`;
             createOrder: function(data, actions) {
                 return actions.order.create({
                     purchase_units: [{
