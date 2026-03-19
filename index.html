@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Trend Store</title>
+
+<!-- SEO -->
+<meta name="description" content="AI-powered trending product store. Find the hottest products instantly.">
+
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f5f5f5;
+}
+header {
+    background: black;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+button {
+    background: black;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🔥 AI Trending Store</h1>
+<p>Products picked by AI</p>
+</header>
+
+<div class="products" id="product-list"></div>
+
+<script>
+
+// AI PRODUCT FETCH (Mock for now)
+async function getTrendingProducts() {
+    return [
+        {
+            name: "Smart LED Strip Lights",
+            price: "19.99",
+            image: "https://via.placeholder.com/300",
+            description: "Voice-controlled LED lighting"
+        },
+        {
+            name: "Portable Blender",
+            price: "24.99",
+            image: "https://via.placeholder.com/300",
+            description: "Blend smoothies anywhere"
+        },
+        {
+            name: "Wireless Earbuds",
+            price: "29.99",
+            image: "https://via.placeholder.com/300",
+            description: "High quality sound"
+        }
+    ];
+}
+
+function renderProducts(products) {
+    const container = document.getElementById("product-list");
+    container.innerHTML = "";
+
+    products.forEach((product, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <img src="${product.image}">
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <h2>$${product.price}</h2>
+            <div id="paypal-button-${index}"></div>
+        `;
+
+        container.appendChild(card);
+
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: { value: product.price }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert("Payment successful! " + details.payer.name.given_name);
+                });
+            }
+        }).render(`#paypal-button-${index}`);
+    });
+}
+
+async function init() {
+    const products = await getTrendingProducts();
+    renderProducts(products);
+}
+
+init();
+
+</script>
+
+</body>
+</html>
